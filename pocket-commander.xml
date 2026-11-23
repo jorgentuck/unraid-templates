@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<Container version="2">
+  <Name>pocket-commander</Name>
+  <Repository>ghcr.io/jorgentuck/pocket-commander:latest</Repository>
+  <Network>bridge</Network>
+  <Shell>sh</Shell>
+  <Privileged>false</Privileged>
+  <Overview>Root-level file manager server for the Pocket Commander Android app (Krusader-style dual pane on your phone). Sign-in is via LLDAP; only members of the required LDAP group can use it. Put it behind Nginx Proxy Manager with HTTPS.</Overview>
+  <Category>Tools: Status:Stable</Category>
+  <WebUI/>
+  <Icon>https://raw.githubusercontent.com/jorgentuck/unraid-templates/main/icons/pocket-commander.png</Icon>
+  <ExtraParams>--restart unless-stopped</ExtraParams>
+  <Config Name="API port" Target="8080" Default="8484" Mode="tcp" Description="Point Nginx Proxy Manager at this port (websockets not needed)." Type="Port" Display="always" Required="true" Mask="false">8484</Config>
+  <Config Name="Files" Target="/data" Default="/mnt/user" Mode="rw" Description="What the app can browse. /mnt/user = all shares (like Krusader's /media). Map /mnt here instead to also see disks and pools, and set PC_TRASH_DEPTH to 2." Type="Path" Display="always" Required="true" Mask="false">/mnt/user</Config>
+  <Config Name="AppData" Target="/config" Default="/mnt/user/appdata/pocket-commander" Mode="rw" Description="Sessions, thumbnails cache, audit log." Type="Path" Display="advanced" Required="true" Mask="false">/mnt/user/appdata/pocket-commander</Config>
+  <Config Name="Host passwd (owner names)" Target="/host/etc/passwd" Default="/etc/passwd" Mode="ro" Description="Lets the app show Unraid user names instead of numeric ids." Type="Path" Display="advanced" Required="false" Mask="false">/etc/passwd</Config>
+  <Config Name="Host group (group names)" Target="/host/etc/group" Default="/etc/group" Mode="ro" Description="" Type="Path" Display="advanced" Required="false" Mask="false">/etc/group</Config>
+  <Config Name="Run as (PUID)" Target="PUID" Default="0|99" Mode="" Description="0 = root: full access to every file and permission, like Krusader running as root. 99 = nobody: the app can only touch what Unraid's share user can (no chown, no root-only files)." Type="Variable" Display="always" Required="true" Mask="false">0</Config>
+  <Config Name="Run as group (PGID)" Target="PGID" Default="0|100" Mode="" Description="0 = root, 100 = users. Use 100 with PUID 99." Type="Variable" Display="always" Required="true" Mask="false">0</Config>
+  <Config Name="LDAP URL" Target="LDAP_URL" Default="ldap://lldap:3890" Mode="" Description="Your LLDAP LDAP endpoint (container name works on the same custom network, otherwise use the server IP: ldap://192.168.1.10:3890)." Type="Variable" Display="always" Required="true" Mask="false">ldap://192.168.1.10:3890</Config>
+  <Config Name="LDAP base DN" Target="LDAP_BASE_DN" Default="dc=example,dc=com" Mode="" Description="Same as LLDAP_LDAP_BASE_DN." Type="Variable" Display="always" Required="true" Mask="false">dc=example,dc=com</Config>
+  <Config Name="LDAP bind DN" Target="LDAP_BIND_DN" Default="uid=pocketcommander,ou=people,dc=example,dc=com" Mode="" Description="A service user in the lldap_strict_readonly group." Type="Variable" Display="always" Required="true" Mask="false">uid=pocketcommander,ou=people,dc=example,dc=com</Config>
+  <Config Name="LDAP bind password" Target="LDAP_BIND_PASSWORD" Default="" Mode="" Description="Password of the bind user." Type="Variable" Display="always" Required="true" Mask="true"></Config>
+  <Config Name="Required LDAP group" Target="LDAP_REQUIRED_GROUP" Default="pocket_commander" Mode="" Description="Only members of this LLDAP group can sign in. Removing someone from it locks them out within 10 minutes." Type="Variable" Display="always" Required="true" Mask="false">pocket_commander</Config>
+  <Config Name="Owner for new files" Target="PC_NEW_OWNER" Default="99:100" Mode="" Description="uid:gid applied to uploads, new folders and extracted files (99:100 = nobody:users, same as SMB). 'keep' leaves them owned by root." Type="Variable" Display="advanced" Required="false" Mask="false">99:100</Config>
+  <Config Name="New file mode" Target="PC_NEW_FILE_MODE" Default="0666" Mode="" Description="" Type="Variable" Display="advanced" Required="false" Mask="false">0666</Config>
+  <Config Name="New folder mode" Target="PC_NEW_DIR_MODE" Default="0777" Mode="" Description="" Type="Variable" Display="advanced" Required="false" Mask="false">0777</Config>
+  <Config Name="Trash retention (days)" Target="PC_TRASH_DAYS" Default="30" Mode="" Description="Deleted items go to a hidden .pc-trash folder in each share and are purged after this many days. 0 = keep forever." Type="Variable" Display="advanced" Required="false" Mask="false">30</Config>
+  <Config Name="Trash depth" Target="PC_TRASH_DEPTH" Default="1" Mode="" Description="1 when /data is /mnt/user (trash per share). 2 when /data is /mnt." Type="Variable" Display="advanced" Required="false" Mask="false">1</Config>
+  <Config Name="Use trash" Target="PC_TRASH" Default="true" Mode="" Description="false = deletes are permanent." Type="Variable" Display="advanced" Required="false" Mask="false">true</Config>
+  <Config Name="Parallel jobs" Target="PC_MAX_JOBS" Default="3" Mode="" Description="How many copy/move/extract jobs run at once (extra ones queue)." Type="Variable" Display="advanced" Required="false" Mask="false">3</Config>
+  <Config Name="Session lifetime (days)" Target="PC_SESSION_DAYS" Default="90" Mode="" Description="App stays signed in this long without use." Type="Variable" Display="advanced" Required="false" Mask="false">90</Config>
+  <Config Name="TZ" Target="TZ" Default="America/Chicago" Mode="" Description="" Type="Variable" Display="advanced" Required="false" Mask="false">America/Chicago</Config>
+</Container>
